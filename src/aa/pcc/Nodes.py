@@ -49,6 +49,7 @@ class Nodes(AaBase):
         self.status = None
         self.payload = None
         self.tenant = None 
+        self.tenant_id = None
         self.ids = None
 
         self.interface_name = []
@@ -138,6 +139,27 @@ class Nodes(AaBase):
         banner("PCC.Get Node")
         conn = BuiltIn().get_variable_value("${PCC_CONN}")
         return pcc.get_node_by_id(conn, self.Id)
+    
+    ###########################################################################
+    @keyword(name="PCC.Assign Tenant to Node")
+    ###########################################################################
+    def assign_tenant_to_node(self, *args, **kwargs):
+        """
+        Assigning Tenant to Node
+        [Args]
+            (str) Name
+        [Returns]
+            (dict) Response: Get Node response after Tenant is assigned (includes any errors)
+        """
+        self._load_kwargs(kwargs)
+        banner("PCC.Assign Tenant to Node")
+        node_payload = {"tenant" : self.tenant_id,
+                   "ids" : [self.ids]
+                  }
+        
+        conn = BuiltIn().get_variable_value("${PCC_CONN}")
+        response = pcc.assigning_tenant_to_node(conn, data=node_payload)
+        return self.get_nodes(conn)
 
     ###########################################################################
     @keyword(name="PCC.Get Node Id")
